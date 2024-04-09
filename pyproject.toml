@@ -15,6 +15,7 @@ loguru = "^0.7.2"
 seaborn = "^0.13.2"
 datasets = "^2.18.0"
 tensorboard = "^2.16.2"
+keras-tuner = "^1.4.7"
 
 
 [tool.poetry.group.dev.dependencies]
