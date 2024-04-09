@@ -178,6 +178,7 @@ pyrightconfig.json
 
 # Generated
 datasets/
+logs/
 models/
 
 # End of https://www.toptal.com/developers/gitignore/api/python
