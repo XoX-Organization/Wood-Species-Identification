@@ -13,28 +13,28 @@ import numpy as np
 class Dataset:
     HUGGINGFACE_REPO = r"LynBean/wood-species-identification"
 
-    @staticmethod
-    def _load() -> DatasetDict:
+    @classmethod
+    def _load(cls) -> DatasetDict:
         return load_dataset(
-            Dataset.HUGGINGFACE_REPO,
+            cls.HUGGINGFACE_REPO,
             num_proc=20,
         )
 
-    @staticmethod
-    def _process_table(table: ConcatenationTable) -> Tuple[np.ndarray, np.ndarray]:
+    @classmethod
+    def _process_table(cls, table: ConcatenationTable) -> Tuple[np.ndarray, np.ndarray]:
         return (
             np.array([img_to_array(img) for img in table["image"]]),
             np.array(table["label"]),
         )
 
-    @staticmethod
-    def get(*, validation_split: int=0.2) -> Tuple[TFDataset, TFDataset, TFDataset]:
+    @classmethod
+    def get(cls, *, validation_split: int=0.3) -> Tuple[TFDataset, TFDataset, TFDataset]:
         """Returns a tuple of train, validation, and test datasets.
         Each dataset contains an attribute `class_names` that contains the class names.
         """
-        dd: DatasetDict = Dataset._load()
+        dd: DatasetDict = cls._load()
 
-        split_list = Dataset._process_table(dd["train"])
+        split_list = cls._process_table(dd["train"])
 
         train_images, val_images, train_labels, val_labels = train_test_split(
             split_list[0],
@@ -52,7 +52,7 @@ class Dataset:
             val_labels,
         )
 
-        test_list = Dataset._process_table(dd["test"])
+        test_list = cls._process_table(dd["test"])
 
         train_ds = TFDataset.from_tensor_slices(train_list)
         val_ds = TFDataset.from_tensor_slices(val_list)

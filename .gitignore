@@ -177,6 +177,7 @@ pyrightconfig.json
 .vscode/
 
 # Generated
+caches/
 datasets/
 logs/
 models/
