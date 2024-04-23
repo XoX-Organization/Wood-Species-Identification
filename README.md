@@ -16,7 +16,7 @@ The project is developed on WSL Ubuntu 18.04 and uses Poetry for dependency mana
 2. Clone the repository to your local machine.
 3. Navigate to the project directory and install the dependencies using Poetry:
    ```bash
-   python3 -m poetry install
+   python3 -m poetry install --with dev
    ```
 
 ## Dataset
