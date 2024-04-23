@@ -11,6 +11,9 @@ from uuid import uuid4
 
 
 class ModelContext:
+    """A context manager for TensorFlow Keras models, handling model
+    operations such as saving, deleting, and property management.
+    """
     def __init__(self, model: Model, path: Path):
         self._model: Model = model
         self._path: Path = path
@@ -21,6 +24,8 @@ class ModelContext:
 
     @model.setter
     def model(self, other: Model) -> None:
+        """Sets a new model, backing up the current one before replacement.
+        """
         ModelFactory.make_backup(self)
         self._model = other
 
@@ -37,18 +42,27 @@ class ModelContext:
         return self._path.name
 
     def delete(self) -> None:
+        """Deletes the model file from the filesystem.
+        """
         self._path.unlink(missing_ok=True)
         logger.info(f"Model deleted: {self._path}")
 
     def save(self) -> None:
+        """Saves the model to its file path.
+        """
         self._save(self._path)
 
     def _save(self, path: Path) -> None:
+        """Helper method to save the model to a specified path.
+        """
         self._model.save(path)
         logger.debug(f"Model saved to {path}")
 
 
 class ModelFactory:
+    """A factory class for creating and managing ModelContext objects, facilitating
+    model file operations such as creation, backup, and retrieval.
+    """
     MODEL_DIRNAME = "models"
     MODEL_DIRPATH = Path(MODEL_DIRNAME).resolve()
     MODEL_BACKUP_DIRNAME = "backups"
@@ -65,6 +79,8 @@ class ModelFactory:
 
     @classmethod
     def create(cls, model: Model=None) -> ModelContext:
+        """Creates a new ModelContext with an optional initial model.
+        """
         if model is None:
             model = Model()
 
@@ -73,6 +89,8 @@ class ModelFactory:
 
     @classmethod
     def models(cls) -> List[ModelContext]:
+        """Retrieves all models from the storage directory as ModelContext objects.
+        """
         cls._mkdir()
         model_list: List[Tuple[Model, Path]] = []
 
@@ -95,5 +113,7 @@ class ModelFactory:
 
     @classmethod
     def make_backup(cls, context: ModelContext) -> None:
+        """Creates a backup of the model associated with a given ModelContext.
+        """
         bak_filename = f"{context.name}-{int(time())}.keras"
         context._save(MODEL_BACKUP_DIRPATH / bak_filename)

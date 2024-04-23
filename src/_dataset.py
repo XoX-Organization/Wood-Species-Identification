@@ -2,6 +2,7 @@
 from datasets import load_dataset
 from datasets.dataset_dict import DatasetDict
 from datasets.table import ConcatenationTable
+from pathlib import Path
 from sklearn.model_selection import train_test_split
 from tensorflow.data import Dataset as TFDataset
 from tensorflow.keras.utils import img_to_array
@@ -11,17 +12,28 @@ import numpy as np
 
 
 class Dataset:
+    """
+    A class to handle loading, processing, and splitting of the wood species identification dataset from Hugging Face.
+
+    This class provides functionality to load the dataset from the specified Hugging Face repository, process the images and labels, and split the dataset into training, validation, and test sets.
+    """
+    DATASET_DIR = Path("caches/datasets").resolve()
     HUGGINGFACE_REPO = r"LynBean/wood-species-identification"
 
     @classmethod
     def _load(cls) -> DatasetDict:
+        """Loads the dataset from the Hugging Face repository, caching it locally.
+        """
         return load_dataset(
             cls.HUGGINGFACE_REPO,
+            cache_dir=cls.DATASET_DIR,
             num_proc=20,
         )
 
     @classmethod
     def _process_table(cls, table: ConcatenationTable) -> Tuple[np.ndarray, np.ndarray]:
+        """Processes a table from the dataset, converting images to arrays and extracting labels.
+        """
         return (
             np.array([img_to_array(img) for img in table["image"]]),
             np.array(table["label"]),
@@ -29,8 +41,7 @@ class Dataset:
 
     @classmethod
     def get(cls, *, validation_split: int=0.3) -> Tuple[TFDataset, TFDataset, TFDataset]:
-        """Returns a tuple of train, validation, and test datasets.
-        Each dataset contains an attribute `class_names` that contains the class names.
+        """Returns the training, validation, and test datasets as TensorFlow datasets, with an optional validation split ratio.
         """
         dd: DatasetDict = cls._load()
 
